@@ -1,0 +1,21 @@
+[project]
+name = "cybersec-arsenal"
+version = "0.1.0"
+description = "Hands-on cybersecurity projects - offensive concepts, defensive tooling, zero-dependency Python."
+requires-python = ">=3.10"
+license = { text = "MIT" }
+
+[tool.pytest.ini_options]
+testpaths = ["projects"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "UP", "S"]
+ignore = ["S101", "S603", "S607", "S311", "S324", "E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/test_*.py" = ["S103", "S105", "S106", "S108"]
