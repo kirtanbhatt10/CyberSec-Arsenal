@@ -1,0 +1,32 @@
+name: 🆕 New project proposal
+description: Propose (or claim) a new project for the arsenal
+labels: ["new-project"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Project name
+      placeholder: DNS Recon Tool
+    validations:
+      required: true
+  - type: dropdown
+    id: tier
+    attributes:
+      label: Tier
+      options: [Foundations, Beginner, Intermediate, Advanced]
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What will it do and what will people learn?
+    validations:
+      required: true
+  - type: checkboxes
+    id: rules
+    attributes:
+      label: Checklist
+      options:
+        - label: It's educational / defensive and has safe defaults
+          required: true
+        - label: I'd like to build it myself

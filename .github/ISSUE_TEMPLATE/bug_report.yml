@@ -1,0 +1,29 @@
+name: 🐛 Bug / false positive / false negative
+description: Something is broken or a detection is wrong
+labels: ["bug"]
+body:
+  - type: input
+    id: project
+    attributes:
+      label: Which project?
+      placeholder: web-attack-detector
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Input and command to reproduce
+      description: Redact real secrets, IPs and personal data.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected vs actual result
+    validations:
+      required: true
+  - type: input
+    id: python
+    attributes:
+      label: Python version / OS
