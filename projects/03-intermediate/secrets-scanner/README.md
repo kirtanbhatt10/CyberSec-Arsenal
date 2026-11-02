@@ -18,7 +18,13 @@ Secrets are **always redacted** in output so the report itself doesn't become a 
 
 1. **Provider rules** - AWS, GitHub (classic + fine-grained), Slack, Stripe, Google, OpenAI, JWTs, DB connection strings, PEM private keys.
 2. **Generic assignments** - `password = "..."`, `api_key: '...'` - kept only if the value's Shannon entropy is >= 3.5 bits/char and it isn't an obvious placeholder.
-3. **Suppression** - add `# secrets-scanner: ignore` to a line that is a known false positive.
+3. **Suppression** - add `# secrets-scanner: ignore` to a line that is a known false positive, or list path globs (one per line) in a `.secrets-scanner-ignore` file at the scan root. Path ignores apply to git history too.
+
+```text
+# .secrets-scanner-ignore
+tests/fixtures/*
+docs/examples/*.md
+```
 
 ## Use it in CI (GitHub code scanning)
 

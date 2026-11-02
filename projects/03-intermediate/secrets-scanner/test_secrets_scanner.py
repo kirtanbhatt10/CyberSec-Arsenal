@@ -53,3 +53,12 @@ def test_sarif_shape():
     doc = to_sarif(scan_text(AWS, "a.py"))
     assert doc["version"] == "2.1.0"
     assert doc["runs"][0]["results"][0]["ruleId"] == "aws-access-key-id"
+
+
+def test_ignore_file_skips_fixture_paths(tmp_path):
+    (tmp_path / "fixtures").mkdir()
+    (tmp_path / "fixtures" / "keys.txt").write_text(AWS)
+    (tmp_path / "app.py").write_text(f'K = "{AWS}"')
+    assert len(scan_tree(str(tmp_path))) == 2
+    (tmp_path / ".secrets-scanner-ignore").write_text("# test fixtures\nfixtures/*\n")
+    assert [f.file for f in scan_tree(str(tmp_path))] == ["app.py"]

@@ -10,7 +10,8 @@ Detection
 ---------
 1. Provider-specific regexes (AWS, GitHub, Slack, Stripe, Google, private keys, ...)
 2. Generic ``secret = "..."`` assignments filtered by Shannon entropy
-3. Allowlist via inline ``# secrets-scanner: ignore`` comments
+3. Allowlist via inline ``# secrets-scanner: ignore`` comments, or path globs
+   listed in a ``.secrets-scanner-ignore`` file at the scan root
 
 Output as a table, JSON, or SARIF 2.1.0 (GitHub code scanning understands it).
 
@@ -23,6 +24,7 @@ Usage
 from __future__ import annotations
 
 import argparse
+import fnmatch
 import json
 import math
 import os
@@ -56,6 +58,7 @@ PLACEHOLDER = re.compile(r"(?i)(example|changeme|your[_-]|xxxx|\*\*\*|<|\$\{|pla
 IGNORE_MARK = "secrets-scanner: ignore"
 SKIP_DIRS = {".git", "node_modules", ".venv", "venv", "__pycache__", "dist", "build", ".tox"}
 MAX_FILE = 2 * 1024 * 1024
+IGNORE_FILE = ".secrets-scanner-ignore"
 
 
 @dataclass
@@ -118,12 +121,29 @@ def iter_files(root: str):
             yield os.path.relpath(path, root), data.decode("utf-8", "replace")
 
 
-def scan_tree(root: str, min_entropy: float = 3.5) -> list[Finding]:
-    return [f for rel, text in iter_files(root) for f in scan_text(text, rel, min_entropy)]
+def load_ignore_globs(root: str) -> list[str]:
+    """Read path globs (one per line, ``#`` comments) from ``.secrets-scanner-ignore``."""
+    try:
+        with open(os.path.join(root, IGNORE_FILE), encoding="utf-8") as fh:
+            return [ln.strip() for ln in fh if ln.strip() and not ln.lstrip().startswith("#")]
+    except FileNotFoundError:
+        return []
 
 
-def scan_git_history(root: str, min_entropy: float = 3.5) -> list[Finding]:
+def is_ignored(path: str, globs: list[str]) -> bool:
+    path = path.replace(os.sep, "/")
+    return any(fnmatch.fnmatch(path, g) for g in globs)
+
+
+def scan_tree(root: str, min_entropy: float = 3.5, ignore: list[str] | None = None) -> list[Finding]:
+    ignore = load_ignore_globs(root) if ignore is None else ignore
+    return [f for rel, text in iter_files(root) if not is_ignored(rel, ignore)
+            for f in scan_text(text, rel, min_entropy)]
+
+
+def scan_git_history(root: str, min_entropy: float = 3.5, ignore: list[str] | None = None) -> list[Finding]:
     """Scan every added line in every commit (``git log -p``)."""
+    ignore = load_ignore_globs(root) if ignore is None else ignore
     try:
         log = subprocess.run(
             ["git", "-C", root, "log", "--all", "-p", "--no-color", "--unified=0", "--format=COMMIT %H"],
@@ -134,9 +154,9 @@ def scan_git_history(root: str, min_entropy: float = 3.5) -> list[Finding]:
     findings, commit, path, buf = [], "", "", []
 
     def flush():
-        if buf:
+        if buf and not is_ignored(path, ignore):
             findings.extend(scan_text("\n".join(buf), path, min_entropy, commit[:10]))
-            buf.clear()
+        buf.clear()
 
     for line in log.splitlines():
         if line.startswith("COMMIT "):
