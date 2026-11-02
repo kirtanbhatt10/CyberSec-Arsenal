@@ -1,0 +1,13 @@
+THREAT BRIEF - Operation Glass Lantern (fictional sample for testing)
+
+Initial access was a phishing email from billing@invoice-portal[.]xyz linking to
+hxxps://invoice-portal[.]xyz/download/inv_2291.zip. The archive dropped a loader
+(SHA-256: 3f79bb7b435b05321651daefd374cdc681dc06faa65e374e38337b88ca046dea,
+MD5: 44d88612fea8a8f36de82e1278abb02f) which beaconed to 45.137.21[.]9:443 and the
+fallback domain cdn-updates[.]top.
+
+The actors exploited CVE-2024-3400 on the edge firewall and used T1059.001 (PowerShell)
+and T1566.002 (Spearphishing Link). Internal pivoting via 10.20.0.15 was observed.
+Ransom demanded to bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq.
+
+References: https://attack.mitre.org/techniques/T1566/002/ and https://nvd.nist.gov/vuln/detail/CVE-2024-3400
