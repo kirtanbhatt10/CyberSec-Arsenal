@@ -14,7 +14,7 @@ Offensive concepts, defensive tooling, real detection logic - written in clean, 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-ff69b4.svg)](CONTRIBUTING.md)
 ![Stars](https://img.shields.io/github/stars/kirtanbhatt10/CyberSec-Arsenal?style=social)
 
-[Projects](#-projects) · [Quick start](#-quick-start) · [Learning path](ROADMAP.md) · [Resources](RESOURCES.md) · [Contributing](CONTRIBUTING.md)
+[Projects](#-projects) · [Quick start](#-quick-start) · [Learning path](ROADMAP.md) · [Resources](RESOURCES.md) · [Standalone tools](#-standalone-tools) · [Contributing](CONTRIBUTING.md)
 
 </div>
 
@@ -69,7 +69,7 @@ Want to build one of these? [Open an issue](../../issues/new/choose) and claim i
 | Tier | Project idea |
 |---|---|
 | 🟡 | DNS Recon Tool (records, zone-transfer check, subdomain brute force) |
-| 🟡 | HTTP Security Headers Grader |
+| 🟡 | HTTP Security Headers Grader (a full CLI already lives in [headerhawk](https://github.com/kirtanbhatt10/headerhawk); a single-file teaching version is still welcome) |
 | 🔴 | Packet Sniffer & Protocol Analyzer (scapy) |
 | 🔴 | TLS Certificate & Cipher Auditor |
 | 🔴 | YARA Rule Scanner for suspicious files |
@@ -90,12 +90,22 @@ python projects/02-beginner/phishing-url-analyzer/phish_analyzer.py "http://payp
 python projects/03-intermediate/web-attack-detector/web_attack_detector.py \
        projects/03-intermediate/web-attack-detector/sample_access.log
 
-# run the whole test suite
+# run the whole test suite, or just one project's tests
 pip install pytest
 pytest
+pytest projects/02-beginner/jwt-inspector
 ```
 
-No `pip install -r requirements.txt`. Every tool uses only the Python standard library.
+The phishing analyzer explains every point of its score:
+
+```text
+[SUSPICIOUS] score=58  http://paypa1.com/login
+    +10 plain HTTP (no TLS)
+    +40 'paypa1' uses lookalike characters to impersonate 'paypal'
+    +8  credential-themed keywords: login
+```
+
+No `pip install -r requirements.txt`. Every tool uses only the Python standard library (3.10+).
 
 ---
 
@@ -123,6 +133,22 @@ CyberSec-Arsenal/
 ├── RESOURCES.md            # labs, CTFs, books, channels
 └── .github/                # CI, issue & PR templates
 ```
+
+---
+
+## 🔗 Standalone tools
+
+Some ideas grew into full projects with their own releases, CI and docs:
+
+| Tool | What it does |
+|---|---|
+| [headerhawk](https://github.com/kirtanbhatt10/headerhawk) | HTTP security header and cookie auditor with A+ to F grades, SARIF output and CI gating |
+| [promptshield](https://github.com/kirtanbhatt10/promptshield) | Guardrail for LLM apps: prompt injection in, secret/PII/canary leaks out |
+| [Injektor](https://github.com/kirtanbhatt10/Injektor) | LLM security testing CLI: controlled prompt-injection and jailbreak probes |
+| [mcp-warden](https://github.com/kirtanbhatt10/mcp-warden) | Security scanner for MCP server configs: leaked keys, unpinned servers, tool poisoning |
+| [runnerguard](https://github.com/kirtanbhatt10/runnerguard) | Static security linter for GitHub Actions workflows |
+| [specguard](https://github.com/kirtanbhatt10/specguard) | Security linter for OpenAPI specifications |
+| [gadbad](https://github.com/kirtanbhatt10/gadbad) | Static analyser for Indian scam APKs, with explanations in English and Hindi |
 
 ---
 
